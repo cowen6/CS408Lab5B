@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -22,7 +23,7 @@ public class ExampleWebServiceModel extends AbstractModel {
     private static final String TAG = "ExampleWebServiceModel";
 
     private static final String REQUEST_URL = "https://testbed.jaysnellen.com:8443/SimpleChat/board";
-    private static final String USER = "User";
+    private static final String USER = "USER Charlie";
     private static String input;
 
     private MutableLiveData<JSONObject> jsonData;
@@ -141,11 +142,11 @@ public class ExampleWebServiceModel extends AbstractModel {
 
     // Setter / Getter Methods for JSON LiveData
 
-    private void setJsonData(JSONObject json) {
+    private void setJsonData(JSONObject json) throws JSONException {
 
         this.getJsonData().postValue(json);
-        /*NEED TO DO MORE??????*/
-        setOutputText(json.toString());
+
+        setOutputText(json.getString("messages"));
 
     }
 
@@ -171,7 +172,10 @@ public class ExampleWebServiceModel extends AbstractModel {
         @Override
         public void run() {
             JSONObject results = doRequest(urlString);
-            setJsonData(results);
+            try {
+                setJsonData(results);
+            }
+            catch (JSONException e) { Log.e(TAG, " JSONException: ", e); }
         }
 
         // Create and Send Request
@@ -213,27 +217,15 @@ public class ExampleWebServiceModel extends AbstractModel {
 
                     // Create request parameters (these will be echoed back by the example API)
 
-                    /*MODIFY THIS AREA FOR USER INPUT AND NAME!!!!!!!!!!!!!!*/
+                    JSONObject params = new JSONObject();
 
-                    StringBuilder params = new StringBuilder();
-
-                    /*
-                    params.append("name=").append(ExampleWebServiceModel.USER).append("&")
-                            .append("message=").append(ExampleWebServiceModel.input);
-                    String p = "name=Jack+Flack&userid=2001";
-
-                    MUST USE JSON OBJECT
-
-                    params.append("messages=").append(ExampleWebServiceModel.USER).append(": ")
-                            .append(ExampleWebServiceModel.input).append("\n");
-                    */
-                    String p = params.toString();
+                    params.put("name", ExampleWebServiceModel.USER);
+                    params.put("message", ExampleWebServiceModel.input);
 
                     // Write parameters to request body
 
                     OutputStream out = conn.getOutputStream();
-                    out.write(p.getBytes());
-                    /*USE jsonobject.tostring rather than p.getbytes*/
+                    out.write(params.toString().getBytes());
                     out.flush();
                     out.close();
 
