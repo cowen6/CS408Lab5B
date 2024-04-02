@@ -222,6 +222,7 @@ public class ExampleWebServiceModel extends AbstractModel {
                             .append("message=").append(ExampleWebServiceModel.input);
                     String p = "name=Jack+Flack&userid=2001";
 
+                    MUST USE JSON OBJECT
 
                     params.append("messages=").append(ExampleWebServiceModel.USER).append(": ")
                             .append(ExampleWebServiceModel.input).append("\n");
@@ -232,6 +233,7 @@ public class ExampleWebServiceModel extends AbstractModel {
 
                     OutputStream out = conn.getOutputStream();
                     out.write(p.getBytes());
+                    /*USE jsonobject.tostring rather than p.getbytes*/
                     out.flush();
                     out.close();
 
